@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integração ITSM | Strati × Nova Casa | v2.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0B1F3A;--navy-mid:#142A4E;--navy-light:#1E3A6A;
+  --gold:#C9933A;--gold-light:#E8B96A;--gold-pale:#F5E4C3;
+  --ice:#EAF0F8;--ice-mid:#D0DFF0;--white:#FFFFFF;
+  --text-dark:#0B1F3A;--text-mid:#3A5070;--text-muted:#6A85A0;
+  --green:#1A7A4A;--green-light:#4ADE80;--green-pale:#D1FAE5;
+  --red:#991B1B;--red-pale:#FEE2E2;
+  --amber:#92400E;--amber-pale:#FEF3C7;
+  --blue:#1E40AF;--blue-pale:#DBEAFE;
+  --font-d:'Playfair Display',Georgia,serif;
+  --font-b:'DM Sans',system-ui,sans-serif;
+  --font-m:'DM Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-b);color:var(--text-dark);background:var(--white);overflow-x:hidden}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes progFill{from{width:0}to{width:var(--w)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+.anim{opacity:0}
+.anim.on{animation:fadeUp .65s cubic-bezier(.22,1,.36,1) forwards}
+.d1{animation-delay:.1s}.d2{animation-delay:.2s}.d3{animation-delay:.3s}
+.d4{animation-delay:.4s}.d5{animation-delay:.5s}.d6{animation-delay:.6s}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(11,31,58,.97);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(201,147,58,.18);
+  padding:0 48px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{display:flex;align-items:center;gap:12px}
+.nav-title{font-family:var(--font-d);font-size:17px;font-weight:700;color:var(--gold-light)}
+.nav-x{color:rgba(201,147,58,.4);margin:0 4px}
+.nav-sub{font-size:13px;font-weight:400;color:rgba(255,255,255,.45);letter-spacing:.3px}
+.nav-pill{background:rgba(201,147,58,.12);border:1px solid rgba(201,147,58,.28);
+  color:var(--gold-light);font-size:10px;font-weight:600;letter-spacing:1.2px;
+  text-transform:uppercase;padding:3px 9px;border-radius:20px}
+.nav-links{display:flex;gap:24px;list-style:none;align-items:center}
+.nav-links a{color:rgba(255,255,255,.55);text-decoration:none;font-size:13px;transition:color .2s}
+.nav-links a:hover{color:var(--gold-light)}
+.nav-cta{background:var(--gold)!important;color:var(--white)!important;
+  padding:7px 16px!important;border-radius:6px;font-weight:500!important}
+.nav-cta:hover{background:var(--gold-light)!important;color:var(--navy)!important}
+
+/* HERO */
+#hero{min-height:100vh;background:var(--navy);display:flex;align-items:center;
+  position:relative;overflow:hidden;padding:80px 0 60px}
+.hero-grid-bg{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(201,147,58,.035) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(201,147,58,.035) 1px,transparent 1px);
+  background-size:56px 56px}
+.hero-glow{position:absolute;top:-180px;right:-180px;width:680px;height:680px;
+  background:radial-gradient(circle,rgba(201,147,58,.07) 0%,transparent 70%);pointer-events:none}
+.hero-glow2{position:absolute;bottom:-250px;left:-100px;width:560px;height:560px;
+  background:radial-gradient(circle,rgba(30,58,106,.55) 0%,transparent 70%);pointer-events:none}
+.hero-inner{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:0 60px;
+  display:grid;grid-template-columns:1fr 400px;gap:72px;align-items:center}
+.hero-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:24px;
+  animation:fadeUp .6s .2s ease both}
+.h-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
+.h-eye-text{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light)}
+.hero-title{font-family:var(--font-d);font-size:clamp(38px,5vw,64px);font-weight:900;
+  line-height:1.06;color:var(--white);margin-bottom:20px;animation:fadeUp .7s .32s ease both}
+.hero-title .acc{color:var(--gold-light)}
+.hero-sub{font-size:16px;font-weight:300;color:rgba(255,255,255,.58);line-height:1.75;
+  max-width:520px;margin-bottom:36px;animation:fadeUp .7s .48s ease both}
+.hero-tags{display:flex;gap:9px;flex-wrap:wrap;animation:fadeUp .7s .6s ease both}
+.tag{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:6px;
+  font-size:11px;font-weight:500;letter-spacing:.3px}
+.tag-f{background:rgba(201,147,58,.14);border:1px solid rgba(201,147,58,.24);color:var(--gold-pale)}
+.tag-o{border:1px solid rgba(201,147,58,.3);color:rgba(245,228,195,.7)}
+.tag-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+/* Hero card */
+.h-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+  border-radius:16px;padding:28px;animation:fadeUp .8s .65s ease both;position:relative;overflow:hidden}
+.h-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--gold),transparent)}
+.h-card-lbl{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--gold-light);margin-bottom:18px}
+.h-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.h-stat{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);
+  border-radius:10px;padding:14px}
+.h-stat-n{font-family:var(--font-d);font-size:26px;font-weight:700;color:var(--white);margin-bottom:3px}
+.h-stat-l{font-size:11px;color:rgba(255,255,255,.38);letter-spacing:.3px}
+.h-flow{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.h-fnode{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;padding:9px 12px;text-align:center}
+.h-fnode .fl{font-size:10px;color:rgba(255,255,255,.38);margin-bottom:2px}
+.h-fnode .fn{font-size:13px;font-weight:500;color:var(--white)}
+.h-farrow{color:var(--gold);font-size:18px;flex-shrink:0}
+.h-status{display:flex;align-items:center;gap:8px;padding:11px 14px;
+  background:rgba(26,122,74,.12);border:1px solid rgba(26,122,74,.24);border-radius:8px}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--green-light);
+  flex-shrink:0;animation:pulse 2s infinite}
+.h-status-t{font-size:11px;color:#86EFAC;font-weight:500}
+
+/* VERSION BADGE */
+.version-banner{background:linear-gradient(135deg,rgba(201,147,58,.15),rgba(30,58,106,.3));
+  border:1px solid rgba(201,147,58,.3);border-radius:12px;padding:20px 28px;
+  display:flex;align-items:center;gap:16px;margin-bottom:48px}
+.vb-icon{font-size:28px}
+.vb-title{font-size:15px;font-weight:600;color:var(--gold-light);margin-bottom:3px}
+.vb-sub{font-size:13px;color:rgba(255,255,255,.5);line-height:1.5}
+
+/* SECTIONS */
+section{padding:96px 0}
+.container{max-width:1200px;margin:0 auto;padding:0 60px}
+.sec-tag{display:inline-flex;align-items:center;gap:8px;font-size:10px;font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.sec-tag::before{content:'';display:block;width:22px;height:1px;background:var(--gold)}
+.sec-title{font-family:var(--font-d);font-size:clamp(26px,3.5vw,42px);font-weight:700;
+  color:var(--text-dark);line-height:1.15;margin-bottom:14px}
+.sec-title-w{color:var(--white)}
+.sec-sub{font-size:15px;color:var(--text-muted);line-height:1.75;max-width:560px;margin-bottom:52px}
+.sec-sub-w{color:rgba(255,255,255,.5)}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--ice-mid),transparent);margin:0 60px}
+
+/* ARQUITETURA */
+#arquitetura{background:var(--ice)}
+.arch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:40px}
+.arch-card{background:var(--white);border:1px solid var(--ice-mid);border-radius:14px;
+  padding:28px;position:relative;overflow:hidden;transition:transform .3s}
+.arch-card:hover{transform:translateY(-3px)}
+.arch-card-top{position:absolute;top:0;left:0;right:0;height:3px}
+.arch-icon{font-size:28px;margin-bottom:14px}
+.arch-name{font-size:14px;font-weight:600;color:var(--text-dark);margin-bottom:8px}
+.arch-desc{font-size:13px;color:var(--text-muted);line-height:1.65}
+.arch-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.arch-tag{font-size:10px;font-weight:500;padding:3px 8px;border-radius:4px;
+  background:var(--ice);color:var(--text-mid);letter-spacing:.3px;font-family:var(--font-m)}
+
+/* AUTENTICAÇÃO */
+#autenticacao{background:var(--white)}
+.auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:40px}
+.auth-card{border-radius:14px;padding:28px;border:1.5px solid transparent;transition:border-color .3s}
+.auth-card:hover{border-color:var(--gold)}
+.auth-card.rec{border-color:rgba(201,147,58,.4);background:rgba(201,147,58,.03)}
+.auth-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.auth-type{font-size:16px;font-weight:600;color:var(--text-dark)}
+.auth-badge{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  padding:4px 10px;border-radius:20px}
+.ab-rec{background:#D1FAE5;color:#065F46}
+.ab-alt{background:#DBEAFE;color:#1E40AF}
+.ab-bas{background:#F3F4F6;color:#374151}
+.auth-row{display:flex;justify-content:space-between;padding:8px 0;
+  border-bottom:1px solid var(--ice);font-size:13px}
+.auth-row:last-child{border-bottom:none}
+.auth-row-k{color:var(--text-muted)}
+.auth-row-v{font-weight:500;color:var(--text-dark)}
+.auth-v-high{color:var(--green)}
+.auth-v-med{color:var(--amber)}
+.auth-v-low{color:var(--red)}
+.auth-code-box{background:var(--navy);border-radius:10px;padding:20px 24px;margin-top:20px}
+.auth-code-lbl{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--gold-light);margin-bottom:12px}
+.auth-code{font-family:var(--font-m);font-size:13px;color:#86EFAC;line-height:1.8}
+.auth-code .key{color:var(--gold-light)}
+.auth-code .val{color:#93C5FD}
+.auth-alert{background:rgba(201,147,58,.08);border:1px solid rgba(201,147,58,.25);
+  border-left:4px solid var(--gold);border-radius:0 10px 10px 0;padding:18px 22px}
+.auth-alert-t{font-size:14px;font-weight:600;color:var(--gold);margin-bottom:6px}
+.auth-alert-d{font-size:13px;color:var(--text-mid);line-height:1.65}
+
+/* ENDPOINTS */
+#endpoints{background:var(--navy)}
+.ep-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.ep-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:26px;transition:border-color .25s,background .25s}
+.ep-card:hover{background:rgba(255,255,255,.07);border-color:rgba(201,147,58,.35)}
+.ep-card.highlight{border-color:rgba(201,147,58,.5);background:rgba(201,147,58,.06)}
+.ep-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.ep-title{font-size:15px;font-weight:600;color:var(--white)}
+.ep-new{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  padding:3px 8px;border-radius:4px;background:rgba(201,147,58,.2);color:var(--gold-light)}
+.ep-method{display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-m);font-size:12px;padding:8px 14px;
+  border-radius:7px;margin-bottom:10px;width:100%}
+.m-post{background:rgba(26,122,74,.15);color:#4ADE80}
+.m-get{background:rgba(24,95,165,.15);color:#93C5FD}
+.m-delete{background:rgba(153,27,27,.15);color:#FCA5A5}
+.ep-path{font-family:var(--font-m);font-size:11px;font-weight:500;letter-spacing:.3px}
+.ep-desc{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6;margin-top:6px}
+.ep-params{margin-top:14px;display:flex;flex-direction:column;gap:6px}
+.ep-param{display:flex;align-items:flex-start;gap:8px;
+  background:rgba(255,255,255,.03);border-radius:6px;padding:8px 12px}
+.ep-param-name{font-family:var(--font-m);font-size:11px;color:var(--gold-light);
+  min-width:110px;flex-shrink:0}
+.ep-param-req{font-size:10px;color:#FCA5A5;font-weight:600;margin-right:4px}
+.ep-param-desc{font-size:12px;color:rgba(255,255,255,.4);line-height:1.5}
+.ep-full-tag{margin-top:14px;font-size:11px;font-weight:500;
+  padding:5px 12px;border-radius:4px;display:inline-block;
+  background:rgba(26,122,74,.15);color:#4ADE80}
+
+/* FLUXO */
+#fluxo{background:var(--ice)}
+.flow-wrap{position:relative}
+.flow-line{position:absolute;top:44px;left:10%;right:10%;height:2px;
+  background:linear-gradient(90deg,var(--navy-light),var(--gold),var(--navy-light));z-index:0}
+.flow-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;z-index:1}
+.flow-step{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 16px}
+.flow-num{width:88px;height:88px;border-radius:50%;background:var(--white);
+  border:2px solid var(--navy-light);display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-d);font-size:28px;font-weight:700;color:var(--navy);
+  margin-bottom:20px;transition:all .3s;position:relative}
+.flow-step:hover .flow-num{background:var(--navy);color:var(--white);
+  border-color:var(--gold);transform:scale(1.07)}
+.flow-tag{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:7px}
+.flow-title{font-size:15px;font-weight:600;color:var(--text-dark);margin-bottom:9px;line-height:1.3}
+.flow-desc{font-size:13px;color:var(--text-muted);line-height:1.65}
+.flow-tech{margin-top:12px;padding:8px 12px;background:var(--navy);
+  border-radius:7px;font-family:var(--font-m);font-size:11px;color:#93C5FD;line-height:1.6;
+  text-align:left;width:100%}
+.flow-tech .ft-new{color:var(--gold-light)}
+
+/* VIABILIDADE */
+#viabilidade{background:var(--white)}
+.viab-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:32px}
+.viab-card{background:var(--white);border:1px solid var(--ice-mid);
+  border-radius:14px;padding:26px;transition:transform .3s}
+.viab-card:hover{transform:translateY(-3px)}
+.viab-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.viab-emoji{font-size:26px}
+.viab-verdict{font-size:10px;font-weight:700;letter-spacing:.5px;
+  text-transform:uppercase;padding:4px 10px;border-radius:20px}
+.vv-ok{background:var(--green-pale);color:#065F46}
+.vv-warn{background:var(--amber-pale);color:var(--amber)}
+.vv-def{background:var(--blue-pale);color:var(--blue)}
+.viab-name{font-size:14px;font-weight:600;color:var(--text-dark);margin-bottom:7px}
+.viab-desc{font-size:13px;color:var(--text-muted);line-height:1.65}
+.viab-bar-wrap{margin-top:14px;height:4px;background:var(--ice-mid);border-radius:4px;overflow:hidden}
+.viab-bar{height:100%;border-radius:4px;animation:progFill 1.4s .8s cubic-bezier(.22,1,.36,1) both}
+.bg{background:#10B981;--w:100%}.by{background:#F59E0B;--w:65%}.bb{background:#3B82F6;--w:40%}
+
+/* PENDÊNCIAS */
+#pendencias{background:var(--navy)}
+.pend-banner{background:rgba(153,27,27,.12);border:1px solid rgba(252,165,165,.2);
+  border-left:4px solid #EF4444;border-radius:0 12px 12px 0;
+  padding:22px 26px;margin-bottom:36px}
+.pend-banner-t{font-size:15px;font-weight:600;color:#FCA5A5;margin-bottom:6px}
+.pend-banner-d{font-size:13px;color:rgba(255,255,255,.5);line-height:1.65}
+.pend-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.pend-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:24px;transition:border-color .25s}
+.pend-card.crit{border-left:3px solid #EF4444}
+.pend-card.imp{border-left:3px solid #F59E0B}
+.pend-card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:12px}
+.pend-title{font-size:14px;font-weight:600;color:var(--white);line-height:1.4}
+.pend-pri{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  padding:4px 10px;border-radius:20px;flex-shrink:0}
+.pp-crit{background:rgba(239,68,68,.2);color:#FCA5A5}
+.pp-imp{background:rgba(245,158,11,.15);color:#FCD34D}
+.pend-impact{font-size:13px;color:rgba(255,255,255,.45);line-height:1.6;margin-bottom:14px}
+.pend-resp{display:flex;flex-direction:column;gap:6px}
+.pend-resp-row{display:flex;align-items:center;gap:8px}
+.pend-resp-lbl{font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;
+  color:rgba(255,255,255,.3);min-width:80px}
+.pend-resp-val{font-size:12px;font-weight:500;padding:3px 10px;border-radius:4px}
+.rv-nc{background:rgba(201,147,58,.15);color:var(--gold-light)}
+.rv-st{background:rgba(24,95,165,.2);color:#93C5FD}
+.rv-am{background:rgba(26,122,74,.15);color:#4ADE80}
+.pend-action{margin-top:14px;padding:10px 14px;background:rgba(255,255,255,.04);
+  border-radius:8px;font-size:12px;color:rgba(255,255,255,.4);line-height:1.6;
+  border:1px dashed rgba(255,255,255,.1)}
+
+/* PRÓXIMOS PASSOS */
+#proximos{background:var(--ice)}
+.steps-wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px}
+.steps-col-title{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:24px;display:flex;align-items:center;gap:10px}
+.steps-col-title::after{content:'';flex:1;height:1px;background:var(--gold-pale)}
+.step-item{display:flex;gap:14px;padding:18px 0;border-bottom:1px solid var(--ice-mid)}
+.step-item:last-child{border-bottom:none}
+.step-num{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;font-family:var(--font-d)}
+.sn-navy{background:var(--navy);color:var(--white)}
+.sn-gold{background:var(--gold);color:var(--white)}
+.step-body{flex:1}
+.step-action{font-size:14px;font-weight:600;color:var(--text-dark);margin-bottom:4px;line-height:1.4}
+.step-note{font-size:13px;color:var(--text-muted);line-height:1.6}
+.step-pri{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  padding:3px 8px;border-radius:4px;display:inline-block;margin-top:7px}
+.sp-h{background:var(--red-pale);color:var(--red)}
+.sp-m{background:var(--amber-pale);color:var(--amber)}
+.sp-l{background:var(--green-pale);color:#065F46}
+
+/* DOCUMENTAÇÃO */
+#documentacao{background:var(--navy-mid)}
+.doc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.doc-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;padding:22px;transition:all .25s}
+.doc-card:hover{background:rgba(255,255,255,.07);border-color:rgba(201,147,58,.3)}
+.doc-icon{font-size:26px;margin-bottom:12px}
+.doc-name{font-size:14px;font-weight:600;color:var(--white);margin-bottom:6px}
+.doc-desc{font-size:12px;color:rgba(255,255,255,.38);line-height:1.6}
+.doc-status{margin-top:12px;font-size:10px;font-weight:600;letter-spacing:.5px;
+  text-transform:uppercase;padding:4px 10px;border-radius:20px;display:inline-block}
+.ds-ok{background:rgba(26,122,74,.2);color:#4ADE80}
+.ds-pend{background:rgba(201,147,58,.15);color:var(--gold-light)}
+
+/* CTA */
+#contato{background:var(--navy);padding:96px 0;text-align:center;position:relative;overflow:hidden}
+#contato::before{content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(201,147,58,.03) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(201,147,58,.03) 1px,transparent 1px);
+  background-size:40px 40px}
+.cta-inner{position:relative;z-index:1}
+.cta-title{font-family:var(--font-d);font-size:clamp(28px,4vw,48px);font-weight:700;
+  color:var(--white);margin-bottom:14px}
+.cta-sub{font-size:15px;color:rgba(255,255,255,.48);margin-bottom:36px;
+  max-width:480px;margin-left:auto;margin-right:auto;line-height:1.75}
+.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn-p{background:var(--gold);color:var(--white);padding:13px 30px;border-radius:8px;
+  font-size:14px;font-weight:600;text-decoration:none;transition:all .2s;
+  display:inline-flex;align-items:center;gap:7px}
+.btn-p:hover{background:var(--gold-light);color:var(--navy);transform:translateY(-2px)}
+.btn-o{border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.65);
+  padding:13px 30px;border-radius:8px;font-size:14px;text-decoration:none;
+  transition:all .2s;display:inline-flex;align-items:center;gap:7px}
+.btn-o:hover{border-color:var(--gold);color:var(--gold-light)}
+
+/* FOOTER */
+footer{background:#050E1C;padding:28px 60px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid rgba(201,147,58,.08)}
+.ft-brand{font-family:var(--font-d);font-size:15px;font-weight:700;color:var(--gold-light)}
+.ft-meta{font-size:11px;color:rgba(255,255,255,.22);letter-spacing:.3px}
+.ft-id{font-family:var(--font-m);font-size:10px;color:rgba(255,255,255,.18);letter-spacing:.8px}
+
+/* SCROLL */
+.scroll-hint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  animation:fadeUp .8s 1.2s ease both}
+.sh-txt{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.28)}
+.sh-mouse{width:22px;height:36px;border:1.5px solid rgba(255,255,255,.18);
+  border-radius:11px;display:flex;justify-content:center;padding-top:5px}
+.sh-mouse::after{content:'';width:3px;height:7px;background:rgba(255,255,255,.35);
+  border-radius:2px;animation:float 1.5s infinite}
+
+@media(max-width:900px){
+  nav{padding:0 20px}.nav-links{display:none}
+  .hero-inner,.auth-grid,.arch-grid,.viab-grid,.steps-wrap,.doc-grid,.pend-grid,.ep-grid{grid-template-columns:1fr}
+  .h-card{display:none}.flow-steps{grid-template-columns:1fr 1fr}.flow-line{display:none}
+  .container{padding:0 20px}footer{flex-direction:column;gap:10px;text-align:center;padding:20px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <span class="nav-title">Strati</span>
+    <span class="nav-x">×</span>
+    <span class="nav-sub">Nova Casa</span>
+    <span class="nav-pill">ITSM Integration</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#arquitetura">Arquitetura</a></li>
+    <li><a href="#autenticacao">Autenticação</a></li>
+    <li><a href="#endpoints">Endpoints</a></li>
+    <li><a href="#fluxo">Fluxo</a></li>
+    <li><a href="#viabilidade">Viabilidade</a></li>
+    <li><a href="#pendencias">Pendências</a></li>
+    <li><a href="#contato" class="nav-cta">Agendar Reunião</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">
+        <div class="h-dot"></div>
+        <span class="h-eye-text">Análise Técnica v2.0 · SoftExpert 3.0.0 · Jun/2026</span>
+      </div>
+      <h1 class="hero-title">
+        Integração<br><span class="acc">ITSM</span><br>Documentada
+      </h1>
+      <p class="hero-sub">Análise técnica completa baseada na documentação oficial SoftExpert Suite 3.0.0 — mapeamento de endpoints, autenticação JWT, fluxo bidirecional e pendências críticas com responsáveis definidos.</p>
+      <div class="hero-tags">
+        <span class="tag tag-f"><span class="tag-dot"></span>SoftExpert Suite 3.0.0</span>
+        <span class="tag tag-f"><span class="tag-dot"></span>HaloPSA</span>
+        <span class="tag tag-o">POST /apigateway/v1/workflow</span>
+        <span class="tag tag-o">JWT · Bearer Token</span>
+        <span class="tag tag-o">MCP · IA Integrada</span>
+      </div>
+    </div>
+    <div class="h-card">
+      <div class="h-card-lbl">Status do Projeto · Jun/2026</div>
+      <div class="h-stats">
+        <div class="h-stat"><div class="h-stat-n">30</div><div class="h-stat-l">Componentes API</div></div>
+        <div class="h-stat"><div class="h-stat-n">v3.0</div><div class="h-stat-l">Versão SE Suite</div></div>
+        <div class="h-stat"><div class="h-stat-n">90%</div><div class="h-stat-l">Análise completa</div></div>
+        <div class="h-stat"><div class="h-stat-n">3</div><div class="h-stat-l">Pendências críticas</div></div>
+      </div>
+      <div class="h-flow">
+        <div class="h-fnode"><div class="fl">Cliente</div><div class="fn">SoftExpert</div></div>
+        <div class="h-farrow">⇄</div>
+        <div class="h-fnode"><div class="fl">Parceiro</div><div class="fn">HaloPSA</div></div>
+      </div>
+      <div class="h-status">
+        <div class="sdot"></div>
+        <span class="h-status-t">Fluxo de saída 100% documentado · Retorno pendente</span>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint"><span class="sh-txt">Explorar</span><div class="sh-mouse"></div></div>
+</section>
+
+<!-- ARQUITETURA -->
+<section id="arquitetura">
+  <div class="container">
+    <div class="sec-tag">Arquitetura v3.0.0</div>
+    <h2 class="sec-title">Mecanismos de integração<br>disponíveis no SoftExpert</h2>
+    <p class="sec-sub">A v3.0.0 oferece seis mecanismos nativos de integração, confirmados pela documentação oficial. Cada um tem seu caso de uso específico no projeto.</p>
+    <div class="version-banner anim">
+      <div class="vb-icon">🚀</div>
+      <div>
+        <div class="vb-title">SoftExpert Suite 3.0.0 — Lançado em Dezembro/2025</div>
+        <div class="vb-sub">Nova API REST unificada · Servidor MCP para IA · Formulários Inteligentes · Infraestrutura AWS · Processamento em tempo real</div>
+      </div>
+    </div>
+    <div class="arch-grid">
+      <div class="arch-card anim d1">
+        <div class="arch-card-top" style="background:linear-gradient(90deg,#10B981,#059669)"></div>
+        <div class="arch-icon">🔌</div>
+        <div class="arch-name">Web API REST (Nova v3.0)</div>
+        <div class="arch-desc">APIs REST habilitadas por padrão. CRUD completo em todos os componentes. Estruturadas por componente com endpoints padronizados.</div>
+        <div class="arch-tags"><span class="arch-tag">JSON</span><span class="arch-tag">HTTPS</span><span class="arch-tag">JWT Auth</span><span class="arch-tag">30 componentes</span></div>
+      </div>
+      <div class="arch-card anim d2">
+        <div class="arch-card-top" style="background:linear-gradient(90deg,#3B82F6,#2563EB)"></div>
+        <div class="arch-icon">🔗</div>
+        <div class="arch-name">Fonte de Dados REST</div>
+        <div class="arch-desc">Configura conexões de saída com APIs externas (ex: HaloPSA). Injeção de token via header customizado. Acionado por automações internas.</div>
+        <div class="arch-tags"><span class="arch-tag">Outbound</span><span class="arch-tag">Bearer Header</span><span class="arch-tag">DI001</span></div>
+      </div>
+      <div class="arch-card anim d3">
+        <div class="arch-card-top" style="background:linear-gradient(90deg,#8B5CF6,#7C3AED)"></div>
+        <div class="arch-icon">🤖</div>
+        <div class="arch-name">Servidor MCP (Novidade v3.0)</div>
+        <div class="arch-desc">Model Context Protocol — integração com agentes de IA. Transforma Web APIs em ferramentas utilizáveis por assistentes. Operações, consultas e templates dinâmicos.</div>
+        <div class="arch-tags"><span class="arch-tag">IA</span><span class="arch-tag">Agentes</span><span class="arch-tag">Automação</span><span class="arch-tag">Novo v3.0</span></div>
+      </div>
+      <div class="arch-card anim d4">
+        <div class="arch-card-top" style="background:linear-gradient(90deg,#F59E0B,#D97706)"></div>
+        <div class="arch-icon">🗄️</div>
+        <div class="arch-name">Interface de Banco de Dados</div>
+        <div class="arch-desc">Middleware para importação via tabelas DIINTERFACE / DIINTERFACEDETAIL. Suporte a XLS/XLSX, scripts SQL e importação paralela (multithread).</div>
+        <div class="arch-tags"><span class="arch-tag">Batch</span><span class="arch-tag">SQL</span><span class="arch-tag">Multithread</span><span class="arch-tag">DI013</span></div>
+      </div>
+      <div class="arch-card anim d5">
+        <div class="arch-card-top" style="background:linear-gradient(90deg,#EC4899,#DB2777)"></div>
+        <div class="arch-icon">📊</div>
+        <div class="arch-name">Conjunto de Dados</div>
+        <div class="arch-desc">Captura dados internos e externos via SQL. Vincula resultados a formulários e atributos. Integra informações externas diretamente nos campos de formulário.</div>
+        <div class="arch-tags"><span class="arch-tag">SQL</span><span class="arch-tag">Formulários</span><span class="arch-tag">Atributos</span></div>
+      </div>
+      <div class="arch-card anim d6">
+        <div class="arch-card-top" style="background:linear-gradient(90deg,#14B8A6,#0D9488)"></div>
+        <div class="arch-icon">🏢</div>
+        <div class="arch-name">Aplicações Externas</div>
+        <div class="arch-desc">Integração de sistemas e serviços de terceiros à plataforma. Amplia funcionalidades e interoperabilidade. Detalhamento completo pendente de confirmação.</div>
+        <div class="arch-tags"><span class="arch-tag">Terceiros</span><span class="arch-tag">⚠ Pendente</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- AUTENTICAÇÃO -->
+<section id="autenticacao">
+  <div class="container">
+    <div class="sec-tag">Autenticação v3.0.0</div>
+    <h2 class="sec-title">Modelos de autenticação<br>confirmados</h2>
+    <p class="sec-sub">Quatro modos disponíveis. Para integração máquina-a-máquina entre HaloPSA e SoftExpert, o modelo recomendado é Interno com API Key JWT.</p>
+    <div class="auth-grid">
+      <div class="auth-card anim d1 rec" style="background:rgba(201,147,58,.04);border:1.5px solid rgba(201,147,58,.35)">
+        <div class="auth-card-header">
+          <div class="auth-type">API Key / JWT Token</div>
+          <span class="auth-badge ab-rec">Recomendado</span>
+        </div>
+        <div class="auth-row"><span class="auth-row-k">Protocolo</span><span class="auth-row-v">JSON Web Token (JWT)</span></div>
+        <div class="auth-row"><span class="auth-row-k">Header</span><span class="auth-row-v" style="font-family:var(--font-m);font-size:12px">Authorization: &lt;token&gt;</span></div>
+        <div class="auth-row"><span class="auth-row-k">Segurança</span><span class="auth-row-v auth-v-med">Média</span></div>
+        <div class="auth-row"><span class="auth-row-k">Complexidade</span><span class="auth-row-v auth-v-high">Baixa</span></div>
+        <div class="auth-row"><span class="auth-row-k">Integração ext.</span><span class="auth-row-v">Sim (recomendado)</span></div>
+        <div class="auth-row"><span class="auth-row-k">HTTPS</span><span class="auth-row-v auth-v-high">Obrigatório</span></div>
+      </div>
+      <div class="auth-card anim d2" style="background:var(--ice);border:1.5px solid var(--ice-mid)">
+        <div class="auth-card-header">
+          <div class="auth-type">OpenID Connect</div>
+          <span class="auth-badge ab-alt">SSO Alternativo</span>
+        </div>
+        <div class="auth-row"><span class="auth-row-k">Protocolo</span><span class="auth-row-v">OAuth 2.0 + OIDC</span></div>
+        <div class="auth-row"><span class="auth-row-k">Integração AD</span><span class="auth-row-v">Não obrigatório</span></div>
+        <div class="auth-row"><span class="auth-row-k">Segurança</span><span class="auth-row-v auth-v-high">Alta</span></div>
+        <div class="auth-row"><span class="auth-row-k">Complexidade</span><span class="auth-row-v auth-v-med">Média</span></div>
+        <div class="auth-row"><span class="auth-row-k">Integração ext.</span><span class="auth-row-v">Sim</span></div>
+        <div class="auth-row"><span class="auth-row-k">Autenticação int.</span><span class="auth-row-v">Sim (SSO)</span></div>
+      </div>
+    </div>
+    <div class="auth-code-box anim d3">
+      <div class="auth-code-lbl">Exemplo de chamada autenticada — SoftExpert 3.0.0</div>
+      <div class="auth-code">
+        <span class="key">curl</span> -X POST <span class="val">'https://novacasa.softexpert.com/apigateway/v1/workflow'</span><br>
+        &nbsp;&nbsp;-H <span class="val">'Authorization: &lt;api_key_usuario_integracao&gt;'</span><br>
+        &nbsp;&nbsp;-H <span class="val">'Content-Type: application/json'</span><br>
+        &nbsp;&nbsp;-d <span class="val">'{ "processId": "CHAMADO-N1", "workflowTitle": "Chamado HaloPSA #TKT-001", "userId": "strati.integracao", "tables": [...] }'</span>
+      </div>
+    </div>
+    <div style="margin-top:20px">
+      <div class="auth-alert anim d4">
+        <div class="auth-alert-t">⚠ Requisito técnico: Usuário de Integração Dedicado</div>
+        <div class="auth-alert-d">A SoftExpert recomenda a criação de um usuário exclusivo para integrações com: licença MANAGER obrigatória · apenas 1 grupo de acesso vinculado · sem sincronização com Active Directory · não utilizado para acesso cotidiano ao sistema. As credenciais devem ser centralizadas na tela DI004 para injeção automática nas fontes de dados.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ENDPOINTS -->
+<section id="endpoints">
+  <div class="container">
+    <div class="sec-tag" style="color:var(--gold-light)">Endpoints Confirmados v3.0.0</div>
+    <h2 class="sec-title sec-title-w">APIs documentadas para<br>o projeto de integração</h2>
+    <p class="sec-sub sec-sub-w">Endpoints extraídos diretamente da documentação oficial SoftExpert Suite 3.0.0, relevantes para o fluxo de chamados com o HaloPSA.</p>
+    <div class="ep-grid">
+
+      <div class="ep-card highlight anim d1">
+        <div class="ep-card-header">
+          <span class="ep-title">Criar Workflow (Nova API v3.0)</span>
+          <span class="ep-new">★ Principal</span>
+        </div>
+        <div class="ep-method m-post"><span class="ep-path">POST /apigateway/v1/workflow</span></div>
+        <div class="ep-desc">Cria uma instância de workflow com campos de formulário, tabelas e anexos em uma única requisição JSON estruturada.</div>
+        <div class="ep-params">
+          <div class="ep-param"><span class="ep-param-name">processId</span><span class="ep-param-req">REQ</span><span class="ep-param-desc">Identificador do processo de chamado N1</span></div>
+          <div class="ep-param"><span class="ep-param-name">workflowTitle</span><span class="ep-param-req">REQ</span><span class="ep-param-desc">Título da instância / chamado</span></div>
+          <div class="ep-param"><span class="ep-param-name">userId</span><span class="ep-param-desc">Matrícula do usuário iniciador</span></div>
+          <div class="ep-param"><span class="ep-param-name">tables[ ]</span><span class="ep-param-desc">Campos do formulário: id + value por tipo</span></div>
+          <div class="ep-param"><span class="ep-param-name">attachments[ ]</span><span class="ep-param-desc">Anexos via filereference (hash)</span></div>
+        </div>
+        <span class="ep-full-tag">✓ Documentado v3.0.0</span>
+      </div>
+
+      <div class="ep-card anim d2">
+        <div class="ep-card-header">
+          <span class="ep-title">Upload de Arquivos</span>
+        </div>
+        <div class="ep-method m-post"><span class="ep-path">POST /apigateway/v1/file/upload</span></div>
+        <div class="ep-desc">Importa arquivos eletrônicos (PDF, imagens, planilhas) e retorna hash único para referenciar em outras requisições.</div>
+        <div class="ep-params">
+          <div class="ep-param"><span class="ep-param-name">file</span><span class="ep-param-req">REQ</span><span class="ep-param-desc">multipart/form-data — arquivo a ser enviado</span></div>
+        </div>
+        <span class="ep-full-tag">✓ Documentado v3.0.0</span>
+      </div>
+
+      <div class="ep-card anim d3">
+        <div class="ep-card-header">
+          <span class="ep-title">Consultar Workflow (Instância)</span>
+        </div>
+        <div class="ep-method m-get"><span class="ep-path">GET /apigateway/se/exp/chatbot/api/instance.php</span></div>
+        <div class="ep-desc">Consulta instâncias de workflow existentes por usuário, produto e status. Retorna OID, identifier, título e status do SLA.</div>
+        <div class="ep-params">
+          <div class="ep-param"><span class="ep-param-name">cdProduct</span><span class="ep-param-req">REQ</span><span class="ep-param-desc">39 = Workflow</span></div>
+          <div class="ep-param"><span class="ep-param-name">cdUser</span><span class="ep-param-req">REQ</span><span class="ep-param-desc">Código do usuário</span></div>
+          <div class="ep-param"><span class="ep-param-name">fgStatus</span><span class="ep-param-desc">Filtro por situação</span></div>
+        </div>
+        <span class="ep-full-tag">✓ Documentado v3.0.0</span>
+      </div>
+
+      <div class="ep-card anim d4">
+        <div class="ep-card-header">
+          <span class="ep-title">Adicionar Comentário</span>
+        </div>
+        <div class="ep-method m-post"><span class="ep-path">POST /apigateway/se/exp/chatbot/api/task/comment.php</span></div>
+        <div class="ep-desc">Inclui histórico de comentário em uma instância de workflow. Usado para registrar atualizações do HaloPSA no chamado SoftExpert.</div>
+        <div class="ep-params">
+          <div class="ep-param"><span class="ep-param-name">idInstance</span><span class="ep-param-req">REQ</span><span class="ep-param-desc">Identificador da instância</span></div>
+          <div class="ep-param"><span class="ep-param-name">cdProduct</span><span class="ep-param-req">REQ</span><span class="ep-param-desc">39 = Workflow</span></div>
+          <div class="ep-param"><span class="ep-param-name">text</span><span class="ep-param-req">REQ</span><span class="ep-param-desc">Texto do comentário / atualização</span></div>
+        </div>
+        <span class="ep-full-tag">✓ Documentado v3.0.0</span>
+      </div>
+
+      <div class="ep-card anim d5">
+        <div class="ep-card-header">
+          <span class="ep-title">Registros em Tabela Relacionada</span>
+        </div>
+        <div class="ep-method m-post"><span class="ep-path">POST /apigateway/se/workflowengine/v1/workflow/table-related-records</span></div>
+        <div class="ep-desc">Inclui registros em tabelas de formulário descendente. Suporta até 100 registros por requisição. Inclui fields, relationships e files.</div>
+        <div class="ep-params">
+          <div class="ep-param"><span class="ep-param-name">workflowId</span><span class="ep-param-req">REQ</span><span class="ep-param-desc">Identificador do workflow</span></div>
+          <div class="ep-param"><span class="ep-param-name">records[ ]</span><span class="ep-param-req">REQ</span><span class="ep-param-desc">Array de registros com fields, relationships, files</span></div>
+        </div>
+        <span class="ep-full-tag">✓ Documentado v3.0.0</span>
+      </div>
+
+      <div class="ep-card anim d6" style="border-color:rgba(239,68,68,.25);background:rgba(239,68,68,.04)">
+        <div class="ep-card-header">
+          <span class="ep-title">link-api / instance-data</span>
+          <span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;background:rgba(239,68,68,.2);color:#FCA5A5">⚠ PENDENTE</span>
+        </div>
+        <div class="ep-method" style="background:rgba(239,68,68,.1);color:#FCA5A5">
+          <span class="ep-path">Workflow — métodos link-api e instance-data</span>
+        </div>
+        <div class="ep-desc" style="color:rgba(255,255,255,.5)">Dois dos 6 métodos do componente Workflow ainda não foram extraídos. O link-api pode ser o mecanismo de callback externo (fluxo de retorno HaloPSA → SE). O instance-data retorna campos completos de uma instância.</div>
+        <span style="margin-top:14px;font-size:10px;font-weight:600;padding:4px 10px;border-radius:4px;background:rgba(239,68,68,.15);color:#FCA5A5;display:inline-block">Responsável: Nova Casa — extrair doc. 3.0.0</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider" style="background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent)"></div>
+
+<!-- FLUXO -->
+<section id="fluxo">
+  <div class="container">
+    <div class="sec-tag">Fluxo Técnico</div>
+    <h2 class="sec-title">Como o chamado percorre<br>os dois sistemas</h2>
+    <p class="sec-sub">Fluxo de 4 etapas com endpoints confirmados, exceto a Etapa 4 que depende da confirmação do mecanismo de retorno do SoftExpert.</p>
+    <div class="flow-wrap">
+      <div class="flow-line"></div>
+      <div class="flow-steps">
+        <div class="flow-step anim d1">
+          <div class="flow-num">01</div>
+          <div class="flow-tag">Abertura</div>
+          <div class="flow-title">Chamado N1 criado no SoftExpert</div>
+          <p class="flow-desc">Colaborador Nova Casa preenche formulário de atendimento no SoftExpert 3.0.0 e submete o chamado.</p>
+          <div class="flow-tech">Origem: SoftExpert<br>Ator: Usuário final<br><span class="ft-new">Formulário: form-api</span></div>
+        </div>
+        <div class="flow-step anim d2">
+          <div class="flow-num">02</div>
+          <div class="flow-tag">Roteamento</div>
+          <div class="flow-title">SE envia via API para o HaloPSA</div>
+          <p class="flow-desc">Automação do SoftExpert aciona Fonte de Dados REST, enviando payload JSON completo para o HaloPSA.</p>
+          <div class="flow-tech"><span class="ft-new">POST /apigateway/v1/workflow</span><br>Auth: JWT Bearer Token<br>Payload: JSON estruturado</div>
+        </div>
+        <div class="flow-step anim d3">
+          <div class="flow-num">03</div>
+          <div class="flow-tag">Atendimento</div>
+          <div class="flow-title">Analista Strati trata no HaloPSA</div>
+          <p class="flow-desc">Ticket criado no HaloPSA via API REST OAuth2. Analista Strati trata conforme SLA contratado.</p>
+          <div class="flow-tech">POST /api/Tickets (Halo)<br>Auth: OAuth2 Client Creds<br>Evento: Ticket Updated</div>
+        </div>
+        <div class="flow-step anim d4">
+          <div class="flow-num" style="border-color:#F59E0B;color:#92400E">04</div>
+          <div class="flow-tag" style="color:#F59E0B">Retorno ⚠</div>
+          <div class="flow-title">Status atualizado no SoftExpert</div>
+          <p class="flow-desc">HaloPSA notifica o SoftExpert via webhook. Mecanismo receptor do SE pendente de confirmação.</p>
+          <div class="flow-tech" style="border:1px dashed rgba(245,158,11,.4);background:rgba(245,158,11,.08);color:#FCD34D">⚠ Pendente confirmação:<br>link-api ou Aplicações Ext.<br>Responsável: Nova Casa</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- VIABILIDADE -->
+<section id="viabilidade">
+  <div class="container">
+    <div class="sec-tag">Veredicto Técnico</div>
+    <h2 class="sec-title">Viabilidade por componente<br>baseada na doc. v3.0.0</h2>
+    <p class="sec-sub">Avaliação atualizada com base nos endpoints e mecanismos extraídos diretamente da documentação oficial SoftExpert 3.0.0.</p>
+    <div class="viab-grid">
+      <div class="viab-card anim d1">
+        <div class="viab-head"><span class="viab-emoji">📤</span><span class="viab-verdict vv-ok">100% Viável</span></div>
+        <div class="viab-name">SoftExpert → HaloPSA</div>
+        <p class="viab-desc">POST /apigateway/v1/workflow com payload JSON completo. Fonte de Dados REST com Bearer Token no header. Totalmente documentado na v3.0.0.</p>
+        <div class="viab-bar-wrap"><div class="viab-bar bg"></div></div>
+      </div>
+      <div class="viab-card anim d2">
+        <div class="viab-head"><span class="viab-emoji">🔐</span><span class="viab-verdict vv-ok">100% Viável</span></div>
+        <div class="viab-name">Autenticação JWT</div>
+        <p class="viab-desc">API Key JWT no header Authorization. Usuário dedicado com licença MANAGER. Credenciais centralizadas no DI004. HTTPS obrigatório em produção.</p>
+        <div class="viab-bar-wrap"><div class="viab-bar bg"></div></div>
+      </div>
+      <div class="viab-card anim d3">
+        <div class="viab-head"><span class="viab-emoji">📎</span><span class="viab-verdict vv-ok">100% Viável</span></div>
+        <div class="viab-name">Upload de Anexos</div>
+        <p class="viab-desc">POST /apigateway/v1/file/upload retorna hash único. Referenciado no payload do workflow via attachments[ ]. Fluxo completo documentado.</p>
+        <div class="viab-bar-wrap"><div class="viab-bar bg"></div></div>
+      </div>
+      <div class="viab-card anim d4">
+        <div class="viab-head"><span class="viab-emoji">💬</span><span class="viab-verdict vv-ok">100% Viável</span></div>
+        <div class="viab-name">Comentários / Tratativas</div>
+        <p class="viab-desc">POST /task/comment.php permite ao HaloPSA registrar atualizações de tratativa diretamente no histórico do chamado no SoftExpert.</p>
+        <div class="viab-bar-wrap"><div class="viab-bar bg"></div></div>
+      </div>
+      <div class="viab-card anim d5">
+        <div class="viab-head"><span class="viab-emoji">📥</span><span class="viab-verdict vv-warn">Condicional</span></div>
+        <div class="viab-name">HaloPSA → SoftExpert (Retorno)</div>
+        <p class="viab-desc">Webhook do HaloPSA (Ticket Updated) precisa de endpoint receptor no SE. Depende de confirmar link-api ou Aplicações Externas na doc. 3.0.0.</p>
+        <div class="viab-bar-wrap"><div class="viab-bar by"></div></div>
+      </div>
+      <div class="viab-card anim d6">
+        <div class="viab-head"><span class="viab-emoji">🤖</span><span class="viab-verdict vv-def">A Explorar</span></div>
+        <div class="viab-name">Servidor MCP (IA)</div>
+        <p class="viab-desc">Novidade exclusiva v3.0.0. Integração com agentes de IA via Model Context Protocol. Pode automatizar roteamento inteligente de chamados entre os sistemas.</p>
+        <div class="viab-bar-wrap"><div class="viab-bar bb"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PENDÊNCIAS -->
+<section id="pendencias">
+  <div class="container">
+    <div class="sec-tag" style="color:var(--gold-light)">Pendências Críticas</div>
+    <h2 class="sec-title sec-title-w">O que ainda precisa<br>ser resolvido</h2>
+    <p class="sec-sub sec-sub-w">Itens pendentes com responsáveis definidos, impacto no projeto e ação requerida. Sem estes itens, o fluxo de retorno não pode ser implementado.</p>
+    <div class="pend-banner">
+      <div class="pend-banner-t">🚨 Atenção: 3 pendências bloqueiam o fluxo de retorno (HaloPSA → SoftExpert)</div>
+      <div class="pend-banner-d">O fluxo de saída (SoftExpert → HaloPSA) está 100% documentado e pode iniciar implementação. O fluxo de retorno depende da resolução das pendências P1, P2 e P3 abaixo, todas de responsabilidade da equipe Nova Casa / SoftExpert.</div>
+    </div>
+    <div class="pend-grid">
+      <div class="pend-card crit anim d1">
+        <div class="pend-card-head">
+          <div class="pend-title">Workflow > método link-api — detalhamento completo</div>
+          <span class="pend-pri pp-crit">P1 · Crítico</span>
+        </div>
+        <div class="pend-impact">Um dos 6 métodos do componente Workflow (listado na tabela como "API link") ainda não foi extraído. O nome sugere fortemente que é o mecanismo de conexão/callback com sistemas externos — pode ser exatamente o endpoint receptor para o webhook do HaloPSA.</div>
+        <div class="pend-resp">
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Responsável</span><span class="pend-resp-val rv-nc">Nova Casa — Admin SoftExpert</span></div>
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Ação</span><span class="pend-resp-val rv-am">Extrair seção link-api do portal 3.0.0</span></div>
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Strati</span><span class="pend-resp-val rv-st">Aguarda para mapear endpoint</span></div>
+        </div>
+        <div class="pend-action">📍 Onde buscar: portal developer.softexpert.com > Componente Workflow > método link-api</div>
+      </div>
+      <div class="pend-card crit anim d2">
+        <div class="pend-card-head">
+          <div class="pend-title">Workflow > método instance-data — dados do workflow</div>
+          <span class="pend-pri pp-crit">P2 · Crítico</span>
+        </div>
+        <div class="pend-impact">O método "Dados do workflow" permite leitura completa dos campos de uma instância específica. Essencial para que o HaloPSA consulte o status e os dados de um chamado aberto no SoftExpert, fechando o ciclo de rastreabilidade bidirecional.</div>
+        <div class="pend-resp">
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Responsável</span><span class="pend-resp-val rv-nc">Nova Casa — Admin SoftExpert</span></div>
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Ação</span><span class="pend-resp-val rv-am">Extrair seção instance-data do portal 3.0.0</span></div>
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Strati</span><span class="pend-resp-val rv-st">Aguarda para mapear payload de retorno</span></div>
+        </div>
+        <div class="pend-action">📍 Onde buscar: portal developer.softexpert.com > Componente Workflow > método instance-data</div>
+      </div>
+      <div class="pend-card crit anim d3">
+        <div class="pend-card-head">
+          <div class="pend-title">Aplicações Externas — detalhamento técnico completo</div>
+          <span class="pend-pri pp-crit">P3 · Crítico</span>
+        </div>
+        <div class="pend-impact">A documentação menciona "Aplicações externas permitem integração de sistemas e serviços de terceiros" mas não detalha os mecanismos. Pode conter webhook outbound nativo, endpoint receptor de dados externos ou callback configurável — todos críticos para o fluxo de retorno.</div>
+        <div class="pend-resp">
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Responsável</span><span class="pend-resp-val rv-nc">Nova Casa + Suporte SoftExpert</span></div>
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Ação</span><span class="pend-resp-val rv-am">Extrair ou solicitar ao suporte SE</span></div>
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Strati</span><span class="pend-resp-val rv-st">Aguarda confirmação da existência de webhook</span></div>
+        </div>
+        <div class="pend-action">📍 Alternativa: acionar suporte SoftExpert questionando diretamente: "O SE 3.0.0 suporta webhook outbound/inbound para sistemas parceiros?"</div>
+      </div>
+      <div class="pend-card imp anim d4">
+        <div class="pend-card-head">
+          <div class="pend-title">Mapeamento de campos — payload de-para HaloPSA ↔ SoftExpert</div>
+          <span class="pend-pri pp-imp">P4 · Importante</span>
+        </div>
+        <div class="pend-impact">O payload da nova API POST /apigateway/v1/workflow recebe campos via tables[ ].fields[ ]. É necessário mapear exatamente quais campos do formulário N1 do SoftExpert correspondem a quais campos do ticket HaloPSA (categoria, impacto, urgência, descrição, etc.).</div>
+        <div class="pend-resp">
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Responsável</span><span class="pend-resp-val rv-nc">Nova Casa — formulário N1</span></div>
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Co-resp.</span><span class="pend-resp-val rv-st">Strati — campos HaloPSA</span></div>
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Quando</span><span class="pend-resp-val rv-am">Reunião técnica conjunta</span></div>
+        </div>
+        <div class="pend-action">📍 Ação: Nova Casa documenta campos do formulário SE; Strati documenta campos obrigatórios do HaloPSA; reunião para alinhar o de-para.</div>
+      </div>
+      <div class="pend-card imp anim d5">
+        <div class="pend-card-head">
+          <div class="pend-title">Usuário de integração e credenciais DI004 — criação no ambiente</div>
+          <span class="pend-pri pp-imp">P5 · Importante</span>
+        </div>
+        <div class="pend-impact">A documentação v3.0.0 exige criação de usuário dedicado (licença MANAGER, sem AD, 1 grupo de acesso) e registro das credenciais do HaloPSA no DI004. Estes são pré-requisitos para qualquer teste de integração no ambiente de homologação.</div>
+        <div class="pend-resp">
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Responsável</span><span class="pend-resp-val rv-nc">Nova Casa — Admin SoftExpert</span></div>
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Ação</span><span class="pend-resp-val rv-am">Criar usuário + cadastrar DI004</span></div>
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Strati</span><span class="pend-resp-val rv-st">Fornece Client ID + Secret HaloPSA</span></div>
+        </div>
+        <div class="pend-action">📍 Pré-requisito para homologação. Deve ser criado antes dos primeiros testes de chamada API.</div>
+      </div>
+      <div class="pend-card imp anim d6">
+        <div class="pend-card-head">
+          <div class="pend-title">Ambiente de homologação SoftExpert 3.0.0</div>
+          <span class="pend-pri pp-imp">P6 · Importante</span>
+        </div>
+        <div class="pend-impact">Para executar o ciclo completo de testes (abertura → roteamento → tratativa → retorno) é necessário acesso a um ambiente sandbox/homologação do SoftExpert 3.0.0 com o processo de chamado N1 configurado e o usuário de integração ativo.</div>
+        <div class="pend-resp">
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Responsável</span><span class="pend-resp-val rv-nc">Nova Casa — TI / Infra</span></div>
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Ação</span><span class="pend-resp-val rv-am">Provisionar acesso sandbox</span></div>
+          <div class="pend-resp-row"><span class="pend-resp-lbl">Strati</span><span class="pend-resp-val rv-st">Executa testes de integração</span></div>
+        </div>
+        <div class="pend-action">📍 Sem este ambiente, os testes de integração não podem ser iniciados.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider" style="background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent)"></div>
+
+<!-- PRÓXIMOS PASSOS -->
+<section id="proximos">
+  <div class="container">
+    <div class="sec-tag">Roadmap</div>
+    <h2 class="sec-title">Próximos passos por<br>organização</h2>
+    <p class="sec-sub">Ações divididas entre Nova Casa e Strati com prioridades definidas. Os itens marcados como prioritários desbloqueiam a sequência seguinte.</p>
+    <div class="steps-wrap">
+      <div>
+        <div class="steps-col-title">Nova Casa Distribuidora</div>
+        <div class="step-item anim d1">
+          <div class="step-num sn-gold">1</div>
+          <div class="step-body">
+            <div class="step-action">Extrair link-api e instance-data da documentação 3.0.0</div>
+            <p class="step-note">Acessar portal developer.softexpert.com e copiar o conteúdo completo dos dois métodos pendentes do componente Workflow.</p>
+            <span class="step-pri sp-h">Prioritário — Desbloqueia fluxo de retorno</span>
+          </div>
+        </div>
+        <div class="step-item anim d2">
+          <div class="step-num sn-gold">2</div>
+          <div class="step-body">
+            <div class="step-action">Confirmar suporte a webhook inbound/Aplicações Externas</div>
+            <p class="step-note">Questionar suporte SoftExpert: "O SE 3.0.0 suporta recebimento de webhooks externos de sistemas parceiros?"</p>
+            <span class="step-pri sp-h">Prioritário — Confirma viabilidade do fluxo 4</span>
+          </div>
+        </div>
+        <div class="step-item anim d3">
+          <div class="step-num sn-gold">3</div>
+          <div class="step-body">
+            <div class="step-action">Criar usuário de integração dedicado</div>
+            <p class="step-note">Usuário com licença MANAGER, sem AD, 1 grupo de acesso. Cadastrar credenciais HaloPSA no DI004.</p>
+            <span class="step-pri sp-h">Prioritário — Pré-requisito para testes</span>
+          </div>
+        </div>
+        <div class="step-item anim d4">
+          <div class="step-num sn-gold">4</div>
+          <div class="step-body">
+            <div class="step-action">Documentar campos do formulário N1</div>
+            <p class="step-note">Listar todos os campos do formulário de abertura: ID do campo, tipo, obrigatório, valores possíveis. Base para o mapeamento de payload.</p>
+            <span class="step-pri sp-m">Importante — Reunião técnica</span>
+          </div>
+        </div>
+        <div class="step-item anim d5">
+          <div class="step-num sn-gold">5</div>
+          <div class="step-body">
+            <div class="step-action">Provisionar ambiente de homologação</div>
+            <p class="step-note">Acesso sandbox com processo de chamado N1 configurado e usuário de integração ativo.</p>
+            <span class="step-pri sp-m">Importante — Antes dos testes</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="steps-col-title">Strati Tecnologia</div>
+        <div class="step-item anim d1">
+          <div class="step-num sn-navy">1</div>
+          <div class="step-body">
+            <div class="step-action">Criar API Application dedicada no HaloPSA</div>
+            <p class="step-note">Application exclusiva para Nova Casa com permissões: read:tickets e edit:tickets. Gerar Client ID + Secret.</p>
+            <span class="step-pri sp-h">Prioritário — Pode iniciar agora</span>
+          </div>
+        </div>
+        <div class="step-item anim d2">
+          <div class="step-num sn-navy">2</div>
+          <div class="step-body">
+            <div class="step-action">Configurar Webhooks de saída no HaloPSA</div>
+            <p class="step-note">Eventos: New Ticket Logged + Ticket Updated. Payload HTTP POST para endpoint do SoftExpert (a confirmar após P1/P3).</p>
+            <span class="step-pri sp-h">Prioritário — Aguarda confirmação P3</span>
+          </div>
+        </div>
+        <div class="step-item anim d3">
+          <div class="step-num sn-navy">3</div>
+          <div class="step-body">
+            <div class="step-action">Definir Ticket Type para chamados do SoftExpert</div>
+            <p class="step-note">Ticket Type específico no HaloPSA com defaults em todos os campos obrigatórios para chamados originados via API do SoftExpert.</p>
+            <span class="step-pri sp-m">Importante</span>
+          </div>
+        </div>
+        <div class="step-item anim d4">
+          <div class="step-num sn-navy">4</div>
+          <div class="step-body">
+            <div class="step-action">Mapear payload de-para com Nova Casa</div>
+            <p class="step-note">Participar da reunião técnica para mapear campos do formulário SE ↔ campos do HaloPSA. Gerar documento de mapeamento formal.</p>
+            <span class="step-pri sp-m">Importante — Reunião conjunta</span>
+          </div>
+        </div>
+        <div class="step-item anim d5">
+          <div class="step-num sn-navy">5</div>
+          <div class="step-body">
+            <div class="step-action">Executar testes completos em homologação</div>
+            <p class="step-note">Ciclo: abertura SE → criação HaloPSA → comentário → webhook retorno → atualização SE. Validar todos os cenários antes do go-live.</p>
+            <span class="step-pri sp-l">Sequencial — Pós homologação</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DOCUMENTAÇÃO -->
+<section id="documentacao">
+  <div class="container">
+    <div class="sec-tag" style="color:var(--gold-light)">Base Documental</div>
+    <h2 class="sec-title sec-title-w">Entregas do projeto</h2>
+    <p class="sec-sub sec-sub-w">Registro de todas as entregas documentais com status atualizado após análise da documentação SoftExpert 3.0.0.</p>
+    <div class="doc-grid">
+      <div class="doc-card anim d1">
+        <div class="doc-icon">📄</div>
+        <div class="doc-name">Análise de Viabilidade ANÁLISE-INT-001</div>
+        <div class="doc-desc">Documento Word com análise técnica completa baseada na doc. SE 3.0.0. Mapeamento de fluxo, endpoints, autenticação e pendências com responsáveis.</div>
+        <span class="doc-status ds-ok">✓ Entregue — v1.1</span>
+      </div>
+      <div class="doc-card anim d2">
+        <div class="doc-icon">🌐</div>
+        <div class="doc-name">Hotsite do Projeto (esta página)</div>
+        <div class="doc-desc">Visão executiva e técnica completa, atualizada com dados reais da documentação SE 3.0.0. Pendências com responsáveis definidos.</div>
+        <span class="doc-status ds-ok">✓ v2.0 — Jun/2026</span>
+      </div>
+      <div class="doc-card anim d3">
+        <div class="doc-icon">🔌</div>
+        <div class="doc-name">Mapeamento de Payload JSON</div>
+        <div class="doc-desc">De-para completo entre campos do formulário SoftExpert (tables[].fields[]) e campos obrigatórios do HaloPSA.</div>
+        <span class="doc-status ds-pend">⚠ Pendente — reunião técnica</span>
+      </div>
+      <div class="doc-card anim d4">
+        <div class="doc-icon">🧪</div>
+        <div class="doc-name">Plano de Testes de Integração</div>
+        <div class="doc-desc">Casos de teste para os 4 fluxos: criação, comentário, webhook de retorno e consulta via GET instance.</div>
+        <span class="doc-status ds-pend">⚠ Pendente — após sandbox</span>
+      </div>
+      <div class="doc-card anim d5">
+        <div class="doc-icon">⚙️</div>
+        <div class="doc-name">Manual de Configuração HaloPSA</div>
+        <div class="doc-desc">API Application, Ticket Type, Webhooks e campos obrigatórios com defaults para chamados originados do SoftExpert.</div>
+        <span class="doc-status ds-pend">Em preparação — Strati</span>
+      </div>
+      <div class="doc-card anim d6">
+        <div class="doc-icon">🚀</div>
+        <div class="doc-name">Plano de Go-Live</div>
+        <div class="doc-desc">Cronograma, rollback plan, critérios de aceite e checklists de ativação em produção.</div>
+        <span class="doc-status ds-pend">⚠ Pendente — pós homologação</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="contato">
+  <div class="container">
+    <div class="cta-inner anim">
+      <p style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:14px">Próximo Passo</p>
+      <h2 class="cta-title">Vamos resolver as<br>pendências críticas?</h2>
+      <p class="cta-sub">Agende a reunião técnica entre as equipes de TI da Nova Casa e da Strati para extrair os métodos pendentes, confirmar o webhook inbound e iniciar o ambiente de homologação.</p>
+      <div class="cta-btns">
+        <a href="mailto:carlos.paganotti@strati.com.br?subject=Reunião Técnica — Integração ITSM Strati x Nova Casa&body=Assunto: Alinhamento técnico para resolução das pendências P1, P2 e P3 do projeto de integração SoftExpert x HaloPSA." class="btn-p">📅 Agendar Reunião Técnica</a>
+        <a href="#pendencias" class="btn-o">🔴 Ver Pendências Críticas</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-brand">Strati Tecnologia</div>
+  <div class="ft-meta">Projeto Integração ITSM · Nova Casa Distribuidora · Jun/2026 · SE 3.0.0</div>
+  <div class="ft-id">ANÁLISE-INT-001 · v2.0 · Confidencial</div>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('on') })
+}, { threshold: 0.1 });
+document.querySelectorAll('.anim').forEach(el => obs.observe(el));
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const t = document.querySelector(a.getAttribute('href'));
+    if(t) t.scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+});
+</script>
+</body>
+</html>
